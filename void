@@ -1,0 +1,126 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/daytona7774-beep/testz/refs/heads/main/testgui"))()
+repeat wait() until Arcane
+
+local Window = Arcane:CreateWindow("@daytona", Vector2.new(650, 350), "Default")
+
+Window:CreateTabSection("Cheats")
+local Tab = Window:CreateTab("Main")
+
+local player = game.Players.LocalPlayer
+local UIS = game:GetService("UserInputService")
+
+local Enabled = false
+
+local Height = 999
+local Size = 200
+local Speed = 0.01
+
+local ReturnPos = Vector3.new(321.85, 35.47, -604.28)
+
+local function StartVoid()
+    task.spawn(function()
+        local counter = 0
+
+        while Enabled do
+            local char = player.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+            if hrp then
+                counter += 1
+
+                local x, z
+                local state = counter % 300
+
+                if state < 100 then
+                    local side = counter % 4
+
+                    if side == 0 then
+                        x, z = Size, Size
+                    elseif side == 1 then
+                        x, z = -Size, Size
+                    elseif side == 2 then
+                        x, z = -Size, -Size
+                    else
+                        x, z = Size, -Size
+                    end
+
+                elseif state < 200 then
+                    local angle = counter * 0.5
+                    x = math.cos(angle) * Size
+                    z = math.sin(angle) * Size
+
+                else
+                    x = math.random(-Size, Size)
+                    z = math.random(-Size, Size)
+                end
+
+                hrp.CFrame = CFrame.new(x, Height, z)
+            end
+
+            task.wait(Speed)
+        end
+    end)
+end
+
+local function StopVoid()
+    local char = player.Character
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+    if hrp then
+        hrp.CFrame = CFrame.new(
+            ReturnPos.X,
+            ReturnPos.Y,
+            ReturnPos.Z
+        )
+
+        hrp.AssemblyLinearVelocity = Vector3.zero
+        hrp.AssemblyAngularVelocity = Vector3.zero
+    end
+end
+
+local settings = Window:CreateSection("Void Settings", "Main")
+
+settings:AddSlider("Height", {
+    Min = 100,
+    Max = 500000,
+    Default = 999,
+    Callback = function(v)
+        Height = v
+    end
+})
+
+settings:AddSlider("Speed", {
+    Min = 1,
+    Max = 100,
+    Default = 10,
+    Callback = function(v)
+        Speed = v / 1000
+    end
+})
+
+settings:AddSlider("Breite", {
+    Min = 10,
+    Max = 10000,
+    Default = 200,
+    Callback = function(v)
+        Size = v
+    end
+})
+
+Window:Finalize()
+
+UIS.InputBegan:Connect(function(input, processed)
+    if input.KeyCode == 118 then -- V
+        Enabled = not Enabled
+
+        if Enabled then
+            print("VOID AN")
+            StartVoid()
+        else
+            print("VOID AUS")
+            StopVoid()
+        end
+    end
+end)
+
+print("VOID LOADED - V")
